@@ -1,9 +1,8 @@
-# adventurer-game
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>超業成長之路</title>
+  <title>冒險者成長之路</title>
   <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <style>
     body {
@@ -90,32 +89,52 @@
       60% { opacity: 1; transform: translateX(-50%) scale(1); }
       100% { opacity: 0; transform: translateX(-50%) scale(1); }
     }
+
+    .login {
+      background: rgba(0,0,0,0.8);
+      padding: 20px;
+      border: 2px solid gold;
+      max-width: 400px;
+      margin: 100px auto;
+      border-radius: 10px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <h1>冒險者成長之路</h1>
 
-  <div>
-    <h2>新增角色</h2>
-    <input type="text" id="newName" placeholder="角色名稱" />
-    <select id="newClass">
-      <option value="法師">法師</option>
-      <option value="弓箭手">弓箭手</option>
-      <option value="劍士">劍士</option>
-      <option value="盜賊">盜賊</option>
-      <option value="祭司">祭司</option>
-    </select>
-    <button onclick="createCharacter()">創建角色</button>
+  <div id="loginScreen" class="login">
+    <h2>冒險者登入</h2>
+    <input type="text" id="usernameInput" placeholder="請輸入使用者名稱" />
+    <br /><br />
+    <button onclick="login()">登入</button>
   </div>
 
-  <hr />
+  <div id="gameScreen" style="display:none;">
+    <h1>冒險者成長之路</h1>
 
-  <h2>所有角色</h2>
-  <div id="characterList"></div>
+    <div>
+      <h2>新增角色</h2>
+      <input type="text" id="newName" placeholder="角色名稱" />
+      <select id="newClass">
+        <option value="法師">法師</option>
+        <option value="弓箭手">弓箭手</option>
+        <option value="劍士">劍士</option>
+        <option value="盜賊">盜賊</option>
+        <option value="祭司">祭司</option>
+      </select>
+      <button onclick="createCharacter()">創建角色</button>
+    </div>
+
+    <hr />
+
+    <h2>所有角色</h2>
+    <div id="characterList"></div>
+  </div>
 
   <script>
+    let currentUser = null;
     const levelXp = [10, 13, 16, 19, 22, 25, 28, 31, 34, 37];
-
     const jobImages = {
       '法師': 'https://i.imgur.com/ZIiC03U.png',
       '弓箭手': 'https://i.imgur.com/fEvLu5K.png',
@@ -124,12 +143,24 @@
       '祭司': 'https://i.imgur.com/UxqZcxG.png'
     };
 
+    function login() {
+      const username = document.getElementById("usernameInput").value.trim();
+      if (!username) return alert("請輸入使用者名稱！");
+      currentUser = username;
+      if (!localStorage.getItem("adventurer_game_" + currentUser)) {
+        localStorage.setItem("adventurer_game_" + currentUser, JSON.stringify([]));
+      }
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("gameScreen").style.display = "block";
+      renderCharacters();
+    }
+
     function getCharacters() {
-      return JSON.parse(localStorage.getItem("characters") || "[]");
+      return JSON.parse(localStorage.getItem("adventurer_game_" + currentUser) || "[]");
     }
 
     function saveCharacters(chars) {
-      localStorage.setItem("characters", JSON.stringify(chars));
+      localStorage.setItem("adventurer_game_" + currentUser, JSON.stringify(chars));
     }
 
     function createCharacter() {
@@ -199,15 +230,6 @@
         container.appendChild(div);
       });
     }
-
-    renderCharacters();
   </script>
 </body>
 </html>
-const jobImages = {
-  '法師': 'https://i.imgur.com/TyleYpU.png',
-  '弓箭手': 'https://i.imgur.com/fEvLu5K.png',
-  '劍士': 'https://i.imgur.com/yFHp9Jd.png',
-  '盜賊': 'https://i.imgur.com/hzA1ljy.png',
-  '祭司': 'https://i.imgur.com/UxqZcxG.png'
-};
